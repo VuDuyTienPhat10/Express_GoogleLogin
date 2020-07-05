@@ -1,7 +1,16 @@
 const express = require('express');
-const path=require('path')
-require('dotenv').config({ path: './config/config.env' });
+const path = require('path');
+const session = require('express-session');
+var bodyParser = require("body-parser");
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo')(session);
+if (process.env.NODE_ENV != 'production') {
+    require('dotenv').config({ path: './config/config.env' });
+}
+
 const app = express();
+// Static folder
+app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'));
 const connectDB = require('./config/db');
 connectDB();
@@ -13,26 +22,38 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
 }
 //handlebars:
-var exphbs  = require('express-handlebars');
+var exphbs = require('express-handlebars');
 app.set('view engine', 'hbs');
 // app.set('view engine', 'handlebars');//=> dòng này dẫn tới LỖI
-app.engine('handlebars', exphbs({
-    defaultLayout:'layouts/main',
-    extname:'.hbs'
+app.engine('hbs', exphbs({
+    defaultLayout: 'main',
+    extname: '.hbs'
+}));
+//body-parser:
+app.use(bodyParser.urlencoded({ extended: false }));
+//session:
+
+app.use(session({
+    secret: 'đây là bí mật',
+    resave: false, // nếu k có gì thay đổi thì k lưu lại
+    saveUninitialized: false, //tức là k lưu tạo session cho tới khi something đc store
+    store:new MongoStore({mongooseConnection: mongoose.connection})
 }));
 
 
-app.get('/', function (req, res) {
-    res.render('layouts/login');
-});
 
 
+//passport:
+const passport = require('passport');
+app.use(passport.initialize());
+app.use(passport.session());
+require('./config/passport')(passport)
 
 
 
 // Routes
-// app.use('/', require('./routes/index'))
-// app.use('/auth', require('./routes/auth'))
+app.use('/', require('./routes/index.route'));
+app.use('/auth', require('./routes/auth.route'));
 // app.use('/stories', require('./routes/stories'));
 
 
