@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 
-const UserSchema = new mongoose.Schema({
+const StorySchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    trim:true
+    trim: true,
   },
   body: {
     type: String,
@@ -13,14 +13,11 @@ const UserSchema = new mongoose.Schema({
   status: {
     type: String,
     default: 'public',
-    enum:['public','private']
+    enum: ['public', 'private'],
   },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  image: {
-    type: String,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
   createdAt: {
     type: Date,
@@ -28,4 +25,4 @@ const UserSchema = new mongoose.Schema({
   },
 })
 
-module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('Story', StorySchema)

@@ -31,6 +31,7 @@ app.engine('hbs', exphbs({
 }));
 //body-parser:
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());//chấp nhận post json từ postman chẳng hạn, hay angular
 //session:
 
 app.use(session({
@@ -54,6 +55,7 @@ require('./config/passport')(passport)
 // Routes
 app.use('/', require('./routes/index.route'));
 app.use('/auth', require('./routes/auth.route'));
+app.use('/stories', require('./routes/stories.route'));
 // app.use('/stories', require('./routes/stories'));
 
 
