@@ -3,6 +3,7 @@ const passport = require('passport')
 const router = express.Router()
 const { ensureAuth } = require('../middlewares/auth.middleware')
 const Story = require('../models/Story')
+const { route } = require('./index.route')
 //  route stories/add
 router.get('/add',(req, res) => {
     return res.render('stories/add')
@@ -22,6 +23,19 @@ router.post('/', ensureAuth,async (req, res) => {
         res.render('error/500')
     }
 });
+
+//stories render index
+router.get('/',(req,res)=>{
+   Story.find({status:'public'})
+   .populate('user')
+   .sort({createdAt:'desc'})
+   .then((data)=>{
+    //    res.render('stories/index',{stories:data})
+    console.log('stories public nè',data);
+    
+   })
+   .catch(err=>console.error(err))
+})
 
 
 //get all stories:
